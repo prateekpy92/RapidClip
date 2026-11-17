@@ -1,0 +1,11 @@
+# Logs & Debug
+firebase-debug.log*
+*.log
+
+# Editor & IDE
+.vscode/
+.kiro/
+
+# OS Files
+.DS_Store
+Thumbs.db

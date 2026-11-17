@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AES Crypto — LiveClip</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style>
+:root{--bg:#050507;--s1:rgba(24,24,27,.75);--s2:rgba(39,39,42,.5);--border:rgba(63,63,70,.5);--t1:#f1f5f9;--t2:#94a3b8;--t3:#64748b;--accent:#818cf8;--accent2:#6366f1;--accent3:#4f46e5;--glow:rgba(99,102,241,.12);--cyan:#22d3ee;--cyan-glow:rgba(34,211,238,.12);--green:#34d399;--red:#f43f5e;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mono:'SF Mono','Fira Code',monospace;--spring:cubic-bezier(.175,.885,.32,1.275);--ease:cubic-bezier(.4,0,.2,1)}
+[data-theme="light"]{--bg:#ffffff;--s1:rgba(255,255,255,.95);--s2:#f8fafc;--border:#e2e8f0;--t1:#1e293b;--t2:#475569;--t3:#94a3b8;--accent:#6366f1;--accent2:#4f46e5;--accent3:#4338ca;--glow:rgba(99,102,241,.08);--cyan:#0891b2;--cyan-glow:rgba(8,145,178,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;padding:0;position:relative;overflow-x:hidden}
+
+/* Background */
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 20% 40%,rgba(99,102,241,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 60%,rgba(34,211,238,.06) 0%,transparent 50%);animation:bgMove 10s ease-in-out infinite alternate}
+@keyframes bgMove{0%{opacity:.7;transform:scale(1)}100%{opacity:1;transform:scale(1.03)}}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:.15;animation:drift 14s ease-in-out infinite;z-index:0}
+.orb-1{width:350px;height:350px;background:var(--accent);top:-80px;left:-80px}
+.orb-2{width:280px;height:280px;background:var(--cyan);bottom:-60px;right:-60px;animation-delay:-5s}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-15px)}}
+
+/* Container */
+.container{position:relative;z-index:1;width:100%;max-width:100%;min-height:100vh;background:var(--bg);border:none;border-radius:0;padding:3rem 2.5rem;box-shadow:none;display:flex;flex-direction:column;gap:1.5rem;animation:entry .6s var(--spring) forwards;opacity:0;transform:translateY(20px) scale(.98)}
+.inner{width:100%;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:1.5rem}
+@keyframes entry{to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Header */
+.head{text-align:center}
+.head h1{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.head p{font-size:.78rem;color:var(--t3);margin-top:.25rem}
+.back-btn{position:fixed;top:1.5rem;left:1.5rem;z-index:99;display:inline-flex;align-items:center;gap:.35rem;padding:.55rem 1rem;border-radius:9px;font-size:.75rem;font-weight:600;color:var(--t2);background:var(--s1);backdrop-filter:saturate(180%) blur(20px);border:1px solid var(--border);text-decoration:none;transition:all .3s var(--spring);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.back-btn:hover{color:var(--accent);border-color:var(--accent);transform:translateX(-3px) scale(1.02);box-shadow:0 6px 20px var(--glow)}
+.back-btn svg{width:14px;height:14px}
+
+/* Env Selector */
+.env-row{display:flex;gap:.5rem;justify-content:center}
+.env-btn{padding:.55rem 1.75rem;border-radius:99px;font-size:.78rem;font-weight:600;color:var(--t3);background:var(--s2);border:1px solid var(--border);cursor:pointer;transition:all .3s var(--spring)}
+.env-btn:hover{color:var(--t1);transform:translateY(-1px)}
+.env-btn.on{background:linear-gradient(135deg,var(--accent2),var(--accent3));color:#fff;border-color:transparent;box-shadow:0 4px 16px var(--glow)}
+
+/* Key/IV Row */
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+/* Inputs */
+.field-group{display:flex;flex-direction:column;gap:.35rem}
+.field-group label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);display:flex;justify-content:space-between;align-items:center}
+.badge{font-size:.6rem;padding:.15rem .45rem;border-radius:5px;background:var(--glow);color:var(--accent);border:1px solid rgba(99,102,241,.2);font-weight:600}
+input,textarea{width:100%;padding:.7rem .9rem;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--t1);font-family:var(--mono);font-size:.82rem;transition:all .25s var(--ease);outline:none}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+textarea{resize:vertical;min-height:200px;line-height:1.6}
+textarea::placeholder{color:var(--t3)}
+
+/* Panels */
+.panel{display:flex;flex-direction:column;gap:.85rem}
+.panel textarea{min-height:160px}
+
+/* Buttons */
+.actions{display:flex;gap:.6rem;margin-top:auto}
+.btn{flex:1;padding:.8rem;border-radius:10px;font-size:.82rem;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;transition:all .3s var(--spring);position:relative;overflow:hidden}
+.btn svg{width:15px;height:15px}
+.btn-encrypt{background:linear-gradient(135deg,var(--accent2),var(--accent3));color:#fff;box-shadow:0 4px 12px var(--glow)}
+.btn-encrypt:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 24px var(--glow)}
+.btn-decrypt{background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff;box-shadow:0 4px 12px var(--cyan-glow)}
+.btn-decrypt:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 24px var(--cyan-glow)}
+.btn:active{transform:scale(.96)}
+
+.copy-btn{width:100%;padding:.7rem;border-radius:10px;font-size:.8rem;font-weight:600;color:var(--t2);background:var(--s2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;transition:all .3s var(--spring);margin-top:auto}
+.copy-btn:hover{color:var(--t1);border-color:var(--accent);transform:translateY(-1px)}
+.copy-btn.ok{color:var(--green);border-color:var(--green);background:rgba(52,211,153,.06)}
+.copy-btn svg{width:14px;height:14px}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s1);backdrop-filter:blur(12px);border:1px solid var(--border);padding:.6rem 1.2rem;border-radius:10px;font-size:.78rem;font-weight:500;color:var(--t1);box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:99;opacity:0;transition:all .4s var(--spring);display:flex;align-items:center;gap:.4rem}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{border-color:var(--red)}
+.toast.success{border-color:var(--green)}
+.toast svg{width:14px;height:14px;flex-shrink:0}
+
+/* Processing */
+.processing textarea{animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{0%,100%{border-color:var(--border)}50%{border-color:var(--accent);box-shadow:0 0 12px var(--glow)}}
+
+@media(max-width:768px){
+  .container{padding:1.5rem}
+  .keys{grid-template-columns:1fr}
+  h1{font-size:1.3rem}
+}
+.thm{position:fixed;bottom:1.5rem;left:1.5rem;z-index:9999;width:38px;height:38px;border-radius:50%;background:var(--s1);backdrop-filter:saturate(180%) blur(20px);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.95rem;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:all .3s var(--spring);cursor:pointer}
+.thm:hover{border-color:var(--accent);transform:scale(1.12) rotate(15deg)}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="toast" id="toast"></div>
+<a href="index.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to LiveClip</a>
+<button class="thm" id="thm" title="Toggle theme">🌙</button>
+
+<div class="container">
+  <div class="inner">
+  <div class="head">
+    <h1>AES Crypto Utility</h1>
+    <p>AES-256-CBC Encryption & Decryption</p>
+  </div>
+
+  <div class="env-row">
+    <button class="env-btn on" id="btn-uat" onclick="setEnv('UAT')">UAT</button>
+    <button class="env-btn" id="btn-prod" onclick="setEnv('PROD')">PROD</button>
+  </div>
+
+  <div class="keys">
+    <div class="field-group">
+      <label><span>Secret Key</span><span class="badge">256-BIT</span></label>
+      <input type="text" id="secretKey" value="09876543345678900987654334567890">
+    </div>
+    <div class="field-group">
+      <label><span>IV (Initialization Vector)</span><span class="badge">CBC</span></label>
+      <input type="text" id="iv" value="0987654334567890">
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="field-group">
+    <label>Input (Plaintext / Base64)</label>
+    <textarea id="inputText" placeholder="Paste text here..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-encrypt" onclick="process('encrypt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Encrypt</button>
+    <button class="btn btn-decrypt" onclick="process('decrypt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/></svg>Decrypt</button>
+  </div>
+
+  <!-- Output -->
+  <div class="field-group">
+    <label>Output Result</label>
+    <textarea id="outputText" readonly placeholder="Result appears here..."></textarea>
+  </div>
+
+  <button class="copy-btn" id="copyBtn" onclick="copyOut()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy to Clipboard</button>
+
+  <!-- Ad Banner Slot -->
+  <div style="width:100%;margin-top:1.5rem;text-align:center">
+    <div style="font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:.35rem">Advertisement</div>
+    <div style="width:100%;min-height:90px;background:var(--s1);border:1px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <!-- PASTE ADSTERRA / MONETAG SCRIPT HERE -->
+      <div style="color:var(--t3);font-size:.72rem;padding:.8rem">Sponsored Ad Unit</div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+const envs={UAT:{key:'09876543345678900987654334567890',iv:'0987654334567890'},PROD:{key:'dFrX8OQdMtFWu6VHjnItqzeNu7TdwEtB',iv:'GDGAnEg78JQdFLH1'}};
+
+function toast(msg,type='success'){const t=document.getElementById('toast');t.className='toast '+type;t.innerHTML=(type==='success'?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>')+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+function setEnv(env){document.querySelectorAll('.env-btn').forEach(b=>b.classList.remove('on'));document.getElementById('btn-'+env.toLowerCase()).classList.add('on');document.getElementById('secretKey').value=envs[env].key;document.getElementById('iv').value=envs[env].iv;document.getElementById('outputText').value='';toast('Switched to '+env)}
+
+function process(action){
+  const keyStr=document.getElementById('secretKey').value;
+  const ivStr=document.getElementById('iv').value;
+  const input=document.getElementById('inputText').value;
+  const out=document.getElementById('outputText');
+  if(!input){toast('Enter text in input field','error');return}
+  out.parentElement.classList.add('processing');
+  try{
+    const key=CryptoJS.enc.Utf8.parse(keyStr);
+    const iv=CryptoJS.enc.Utf8.parse(ivStr);
+    setTimeout(()=>{
+      try{
+        if(action==='encrypt'){const enc=CryptoJS.AES.encrypt(input,key,{iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7});out.value=enc.toString();toast('Encrypted successfully')}
+        else{const dec=CryptoJS.AES.decrypt(input,key,{iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7});const txt=dec.toString(CryptoJS.enc.Utf8);if(!txt)throw new Error('Bad data');out.value=txt;toast('Decrypted successfully')}
+        out.scrollIntoView({behavior:'smooth',block:'center'});
+      }catch(e){out.value='';toast('Failed — check Key/IV and input','error')}
+      out.parentElement.classList.remove('processing');
+    },350);
+  }catch(e){out.parentElement.classList.remove('processing');toast('Error: '+e.message,'error')}
+}
+
+function copyOut(){
+  const out=document.getElementById('outputText');
+  const btn=document.getElementById('copyBtn');
+  if(!out.value){toast('Nothing to copy','error');return}
+  navigator.clipboard.writeText(out.value).then(()=>{
+    btn.classList.add('ok');btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';toast('Copied');
+    setTimeout(()=>{btn.classList.remove('ok');btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy to Clipboard'},2000);
+  });
+}
+
+// Theme toggle
+(function(){
+  const th=localStorage.getItem('lc_th')||'dark';
+  document.documentElement.setAttribute('data-theme',th);
+  document.getElementById('thm').textContent=th==='dark'?'☀️':'🌙';
+  document.getElementById('thm').onclick=()=>{
+    const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',n);
+    localStorage.setItem('lc_th',n);
+    document.getElementById('thm').textContent=n==='dark'?'☀️':'🌙';
+  };
+})();
+</script>
+</body>
+</html>
