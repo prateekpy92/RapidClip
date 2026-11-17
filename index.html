@@ -10,10 +10,9 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<!-- ==============================================================
-     GLOBAL AD NETWORK SCRIPTS (Adsterra / Monetag / AdSense)
-     If you use Monetag MultiTag or Adsterra Social Bar, paste it here:
-     ============================================================== -->
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6904976656165075"
+     crossorigin="anonymous"></script>
 
 <style>
 :root{--bg:#050507;--s1:rgba(24,24,27,.7);--s2:rgba(39,39,42,.5);--s3:#3f3f46;--border:rgba(63,63,70,.6);--t1:#fafafa;--t2:#a1a1aa;--t3:#71717a;--accent:#818cf8;--accent2:#6366f1;--accent3:#4f46e5;--glow:rgba(129,140,248,.08);--green:#34d399;--red:#f87171;--blue:#60a5fa;--radius:16px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mono:'SF Mono','Fira Code',monospace;--shadow:0 8px 32px rgba(0,0,0,.5);--spring:cubic-bezier(.175,.885,.32,1.275);--ease:cubic-bezier(.4,0,.2,1);--glass:saturate(180%) blur(20px)}
@@ -222,14 +221,15 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
   <div class="ad-container">
     <div class="ad-label">Advertisement</div>
     <div class="ad-slot" id="ad-home-slot">
-      <!-- ==============================================
-           PASTE ADSTERRA / MONETAG / ADSENSE BANNER CODE HERE
-           Recommended formats: 728x90, 468x60, 320x50, or Native Banner
-           ============================================== -->
-      <div class="ad-fallback">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h4M15 15h2M7 11h2M13 11h4"/></svg>
-        <span>Sponsored Ad Unit</span>
-      </div>
+      <!-- Google AdSense Responsive Unit -->
+      <ins class="adsbygoogle"
+           style="display:block;width:100%"
+           data-ad-client="ca-pub-6904976656165075"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
   </div>
 
@@ -298,14 +298,15 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
   <div class="ad-container" style="margin-top:1.5rem">
     <div class="ad-label">Advertisement</div>
     <div class="ad-slot" id="ad-room-slot">
-      <!-- ==============================================
-           PASTE IN-ROOM ADSTERRA / MONETAG / ADSENSE BANNER CODE HERE
-           Recommended formats: 728x90 or Native Banner
-           ============================================== -->
-      <div class="ad-fallback">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h4M15 15h2M7 11h2M13 11h4"/></svg>
-        <span>Sponsored Ad Unit</span>
-      </div>
+      <!-- Google AdSense Responsive Unit -->
+      <ins class="adsbygoogle"
+           style="display:block;width:100%"
+           data-ad-client="ca-pub-6904976656165075"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>
+           (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
   </div>
 </div>
