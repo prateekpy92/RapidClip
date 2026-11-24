@@ -1,0 +1,19 @@
+{
+  "name": "RapidClip — Real-Time Cross-Device Clipboard",
+  "short_name": "RapidClip",
+  "description": "Instant, no-login cross-device clipboard & file sharing up to 50MB.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#050507",
+  "theme_color": "#818cf8",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

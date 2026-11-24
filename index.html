@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -158,6 +158,25 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 .thm:hover{border-color:var(--accent);transform:scale(1.15) rotate(15deg);box-shadow:0 6px 24px var(--glow)}
 
 
+/* Recent rooms, FAQ, modal, lightbox */
+.recent{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--accent);background:var(--glow);border:1px solid var(--border);padding:.28rem .65rem;border-radius:999px;transition:all .25s var(--spring)}
+.chip:hover{border-color:var(--accent);transform:translateY(-2px)}
+.faq{margin-top:1.25rem}
+.faq h2{font-size:.8rem;font-weight:700;color:var(--t2);margin-bottom:.5rem}
+.faq details{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;margin-bottom:.4rem;font-size:.74rem;color:var(--t3);line-height:1.65}
+.faq summary{cursor:pointer;font-weight:600;color:var(--t2)}
+.faq p{margin-top:.4rem}
+.modal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem}
+.modal.on{display:flex}
+.modal-box{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;text-align:center;max-width:320px;width:100%;animation:pop .35s var(--spring)}
+.modal-box h3{font-size:.95rem;margin-bottom:.8rem}
+.modal-box .qr{background:#fff;border-radius:12px;padding:10px;display:inline-block;line-height:0;margin-bottom:.8rem}
+.modal-box .qr svg,.modal-box .qr img{width:220px;height:220px}
+.modal-box .lnk{font-family:var(--mono);font-size:.7rem;color:var(--t3);word-break:break-all;margin-bottom:.9rem}
+.modal-box .row{display:flex;gap:.4rem;justify-content:center}
+.lightbox img{max-width:94vw;max-height:88vh;border-radius:10px;box-shadow:var(--shadow)}
+
 /* Ad Containers */
 .ad-container{width:100%;max-width:728px;margin:1.25rem auto 0;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:2}
 .ad-label{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:.35rem}
@@ -209,10 +228,23 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
     </div>
   </div>
 
+  <div class="card" id="recent-card" style="display:none">
+    <div class="card-label">Recent rooms</div>
+    <div class="recent" id="recent"></div>
+  </div>
+
   <div class="info-box">
     <b>⚡ How it works:</b> Create or join a room → share text, images & files (up to 50 MB) in real-time.<br>
     <b>⏱ Auto-cleanup:</b> Files & images auto-delete after 48 hours.
   </div>
+
+  <section class="faq">
+    <h2>Frequently asked questions</h2>
+    <details><summary>What is LiveClip?</summary><p>LiveClip is a free online clipboard. Open a room on one device, open the same room on another, and text, images and files appear on both in real time. No account is needed.</p></details>
+    <details><summary>How do I move text from my phone to my PC?</summary><p>Create a room on one device, then tap the share button inside the room to show a QR code. Scan it with the other device to join the same room.</p></details>
+    <details><summary>Is my data private?</summary><p>Anyone who knows or guesses a room name can read it. Use a long, random room name for anything sensitive and don't share secrets such as passwords.</p></details>
+    <details><summary>How long are files kept?</summary><p>Files and images are removed after about 48 hours. Files can be up to 50 MB each.</p></details>
+  </section>
 
   <!-- Home Screen Ad Banner -->
   <div class="ad-container">
@@ -222,6 +254,7 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
       <ins class="adsbygoogle"
            style="display:block;width:100%"
            data-ad-client="ca-pub-6904976656165075"
+           data-ad-slot="8934509558"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
@@ -240,6 +273,7 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
     <div class="header-left">
       <span class="room-badge" id="r-name"></span>
       <button class="btn-icon" id="b-copy" title="Copy ID"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+      <button class="btn-icon" id="b-share" title="Share link / QR code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h1"/></svg></button>
     </div>
     <div class="header-right">
       <span class="conn on" id="r-conn">Connected</span>
@@ -258,6 +292,8 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
     <div class="text-bar">
       <button class="btn btn-ghost btn-xs" id="t-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button>
       <button class="btn btn-ghost btn-xs" id="t-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Save</button>
+      <button class="btn btn-ghost btn-xs" id="t-paste">Paste</button>
+      <button class="btn btn-ghost btn-xs" id="t-clear">Clear</button>
       <span class="sep"></span>
       <button class="btn btn-ghost btn-xs" id="t-up">A↑</button>
       <button class="btn btn-ghost btn-xs" id="t-lo">a↓</button>
@@ -299,6 +335,7 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
       <ins class="adsbygoogle"
            style="display:block;width:100%"
            data-ad-client="ca-pub-6904976656165075"
+           data-ad-slot="8934509558"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
       <script>
@@ -311,6 +348,13 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 </div>
 <input type="file" id="fi-img" accept="image/*" multiple hidden>
 <input type="file" id="fi-file" multiple hidden>
+<div class="modal" id="qr-modal"><div class="modal-box">
+  <h3>Join this room</h3>
+  <div class="qr" id="qr-img"></div>
+  <div class="lnk" id="qr-link"></div>
+  <div class="row"><button class="btn btn-accent btn-sm" id="qr-copy">Copy link</button><button class="btn btn-ghost btn-sm" id="qr-close">Close</button></div>
+</div></div>
+<div class="modal lightbox" id="lightbox"><img id="lb-img" alt="Preview"></div>
 <div class="toasts" id="toasts"></div>
 <button class="thm" id="thm" title="Toggle theme">🌙</button>
 </body>
@@ -387,6 +431,57 @@ document.addEventListener('DOMContentLoaded',()=>{
     })
   }
 });
+
+/* ── Extra features: recent rooms, share/QR, paste image, lightbox, shortcuts ── */
+(function(){
+  const KEY='lc_recent';
+  const getRecent=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}};
+  function renderRecent(){
+    const list=getRecent(),box=document.getElementById('recent'),card=document.getElementById('recent-card');
+    box.innerHTML='';card.style.display=list.length?'':'none';
+    list.forEach(id=>{const b=document.createElement('button');b.className='chip';b.textContent=id;b.onclick=async()=>{if(await joinRoom(id))enterRoom(id)};box.appendChild(b)});
+  }
+  const origEnter=enterRoom;
+  enterRoom=function(id){origEnter(id);localStorage.setItem(KEY,JSON.stringify([id,...getRecent().filter(x=>x!==id)].slice(0,5)))};
+  const origLeave=leaveRoom;
+  leaveRoom=function(){origLeave();renderRecent()};
+  renderRecent();
+
+  const link=()=>location.origin+location.pathname+'#'+room;
+  const modal=document.getElementById('qr-modal');
+  let qrLib=null;
+  const loadQr=()=>qrLib||(qrLib=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)}));
+  document.getElementById('b-share').onclick=async()=>{
+    if(!room)return;
+    document.getElementById('qr-link').textContent=link();
+    const holder=document.getElementById('qr-img');holder.textContent='Loading…';modal.classList.add('on');
+    try{await loadQr();const q=qrcode(0,'M');q.addData(link());q.make();holder.innerHTML=q.createSvgTag({cellSize:6,margin:0,scalable:true})}
+    catch(e){holder.textContent='QR unavailable. Copy the link instead.'}
+  };
+  document.getElementById('qr-copy').onclick=async()=>{try{await navigator.clipboard.writeText(link());toast('Link copied','s')}catch(e){toast('Copy failed','e')}};
+  document.getElementById('qr-close').onclick=()=>modal.classList.remove('on');
+  modal.onclick=e=>{if(e.target===modal)modal.classList.remove('on')};
+
+  const ed=document.getElementById('editor');
+  document.getElementById('t-paste').onclick=async()=>{try{const t=await navigator.clipboard.readText();ed.value+=(ed.value&&!ed.value.endsWith('\n')?'\n':'')+t;ed.dispatchEvent(new Event('input'));toast('Pasted','s')}catch(e){toast('Clipboard access denied','e')}};
+  document.getElementById('t-clear').onclick=()=>{if(!ed.value||!confirm('Clear all text in this room?'))return;ed.value='';ed.dispatchEvent(new Event('input'))};
+
+  document.addEventListener('paste',e=>{
+    if(!room||!e.clipboardData)return;
+    const imgs=[...e.clipboardData.files].filter(f=>f.type.startsWith('image/'));
+    if(!imgs.length)return;
+    e.preventDefault();imgs.forEach(uploadImg);
+    document.querySelector('.tab[data-p="images"]').click();
+  });
+
+  const lb=document.getElementById('lightbox');
+  document.getElementById('igrid').addEventListener('click',e=>{if(e.target.tagName==='IMG'){document.getElementById('lb-img').src=e.target.src;lb.classList.add('on')}});
+  lb.onclick=()=>lb.classList.remove('on');
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){modal.classList.remove('on');lb.classList.remove('on')}
+  });
+})();
 </script>
 </body>
 </html>

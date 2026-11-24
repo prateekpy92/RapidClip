@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>About & How to Use RapidClip (LiveClip)</title>
+<meta name="description" content="Learn about RapidClip (LiveClip) - the fastest way to move text, photos, and files between phones and PCs without installing apps or signing in.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<style>
+:root{--bg:#050507;--s1:rgba(24,24,27,.7);--s2:rgba(39,39,42,.5);--s3:#3f3f46;--border:rgba(63,63,70,.6);--t1:#fafafa;--t2:#a1a1aa;--t3:#71717a;--accent:#818cf8;--accent2:#6366f1;--accent3:#4f46e5;--radius:16px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--shadow:0 8px 32px rgba(0,0,0,.5);--glass:saturate(180%) blur(20px)}
+[data-theme="light"]{--bg:#faf9f7;--s1:rgba(255,255,255,.9);--s2:rgba(245,243,240,.8);--s3:#ede9e3;--border:rgba(214,207,196,.6);--t1:#1c1917;--t2:#44403c;--t3:#78716c;--accent:#6366f1;--accent2:#4f46e5;--accent3:#4338ca;--shadow:0 8px 32px rgba(0,0,0,.04);--glass:saturate(120%) blur(20px)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);line-height:1.7;padding:2rem 1rem;-webkit-font-smoothing:antialiased}
+.container{max-width:760px;margin:0 auto;background:var(--s1);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;box-shadow:var(--shadow)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.logo{font-size:1.2rem;font-weight:800;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:.5rem}
+.back{font-size:.85rem;color:var(--t2);text-decoration:none;padding:.4rem .8rem;border:1px solid var(--border);border-radius:8px;transition:all .2s}
+.back:hover{border-color:var(--accent);color:var(--t1)}
+h1{font-size:2rem;font-weight:800;margin-bottom:.5rem;color:var(--t1)}
+.meta{font-size:.8rem;color:var(--t3);margin-bottom:2rem}
+h2{font-size:1.25rem;font-weight:700;margin:1.8rem 0 .6rem;color:var(--t1);border-left:3px solid var(--accent);padding-left:.6rem}
+h3{font-size:1.05rem;font-weight:600;margin:1.2rem 0 .4rem;color:var(--t1)}
+p,ul,ol{font-size:.9rem;color:var(--t2);margin-bottom:1rem}
+ul,ol{padding-left:1.5rem}
+li{margin-bottom:.4rem}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.step-card{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1rem}
+.step-num{display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;text-align:center;line-height:24px;font-size:.75rem;font-weight:700;margin-right:.5rem}
+.thm{position:fixed;bottom:1.5rem;left:1.5rem;width:40px;height:40px;border-radius:50%;background:var(--s1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="nav">
+    <a href="index.html" class="logo">📋 RapidClip (LiveClip)</a>
+    <a href="index.html" class="back">← Back to App</a>
+  </div>
+
+  <h1>About RapidClip & Usage Guides</h1>
+  <div class="meta">Created by Prateek • Fast, No-Login Cross-Device Sharing</div>
+
+  <p><b>RapidClip</b> (LiveClip) was created to eliminate one of the most common friction points in modern computing: <i>getting a snippet of text, an image, or a file from your phone to your PC (or vice versa) in seconds without signing into bloated apps or emailing yourself.</i></p>
+
+  <h2>How It Works Under the Hood</h2>
+  <p>RapidClip creates temporary, secure channels called <b>Rooms</b> powered by Google Firebase Realtime Database. When two or more devices enter the same room identifier:</p>
+  <ul>
+    <li><b>Instant WebSockets:</b> A live WebSocket connection synchronizes any typed text across all devices with zero perceptible lag.</li>
+    <li><b>Smart Image Downscaling:</b> Images are compressed client-side to prevent cellular bandwidth waste while preserving visual clarity.</li>
+    <li><b>Chunked Binary Delivery:</b> Files up to 50 MB are split into 2 MB chunks and reconstructed as clean downloadable Blobs on the receiving device.</li>
+    <li><b>Automatic Lifecycle:</b> All data automatically expires and deletes after approximately 48 hours.</li>
+  </ul>
+
+  <h2>Step-by-Step Guides</h2>
+
+  <div class="step-card">
+    <h3><span class="step-num">1</span>How to Copy Text from Phone to PC</h3>
+    <ol>
+      <li>Open RapidClip on your PC and click <b>Generate random room</b> (or enter a custom name).</li>
+      <li>Click the <b>Share / QR</b> button in the top navigation bar.</li>
+      <li>Point your smartphone's camera at the QR code and tap the link to open the room on your phone.</li>
+      <li>Paste or type your text on your phone — it will appear instantly on your PC monitor!</li>
+      <li>Click <b>Copy</b> on your PC to paste it into your documents or code editor.</li>
+    </ol>
+  </div>
+
+  <div class="step-card">
+    <h3><span class="step-num">2</span>How to Send Photos Without Quality Loss or Login</h3>
+    <ol>
+      <li>Join the same room on both your mobile device and computer.</li>
+      <li>Tap the <b>Images</b> tab on your phone and choose a photo from your gallery or snap a new shot.</li>
+      <li>The image is optimized and uploaded in milliseconds.</li>
+      <li>On your computer, click the image card in the room gallery to view it full-size in the lightbox, or tap download to save it directly.</li>
+    </ol>
+  </div>
+
+  <div class="step-card">
+    <h3><span class="step-num">3</span>How to Transfer Large Files (Up to 50 MB)</h3>
+    <ol>
+      <li>Click the <b>Files</b> tab in your room.</li>
+      <li>Drag and drop any document, PDF, ZIP archive, or media file up to 50 MB.</li>
+      <li>The file is chunked and streamed across the database.</li>
+      <li>The receiving device shows the file name, size, and download button. Tap the download icon to save it locally.</li>
+    </ol>
+  </div>
+
+  <h2>Frequently Asked Questions</h2>
+  <h3>Do I need to install any app or browser extension?</h3>
+  <p>No! RapidClip runs entirely in standard web browsers (Chrome, Safari, Firefox, Edge). You can also add it to your home screen as a Progressive Web App (PWA) for 1-tap access.</p>
+
+  <h3>Can anyone else see my room?</h3>
+  <p>Rooms are private by obscurity — only people who enter the exact room name can view its contents. For sensitive items, use our random 6-character room generator or a long alphanumeric passphrase.</p>
+
+  <h3>How long is my data stored?</h3>
+  <p>All room contents are strictly temporary and are purged after approximately 48 hours. You can also manually delete images or files anytime using the in-room trash icons.</p>
+
+  <h2>Contact & Support</h2>
+  <p>For feature suggestions, security reports, or technical support, please contact:</p>
+  <ul>
+    <li><b>Email:</b> <a href="mailto:support@rapidclip.app">support@rapidclip.app</a></li>
+    <li><b>Developer:</b> Prateek</li>
+  </ul>
+</div>
+
+<button class="thm" id="thm" title="Toggle theme">🌙</button>
+<script>
+  const th = localStorage.getItem('lc_th') || 'dark';
+  document.documentElement.setAttribute('data-theme', th);
+  document.getElementById('thm').textContent = th === 'dark' ? '☀️' : '🌙';
+  document.getElementById('thm').onclick = () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('lc_th', next);
+    document.getElementById('thm').textContent = next === 'dark' ? '☀️' : '🌙';
+  };
+</script>
+</body>
+</html>
