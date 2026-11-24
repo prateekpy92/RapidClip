@@ -3,10 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>RapidClip — Real-Time Cross-Device Clipboard</title>
-<meta name="description" content="RapidClip - Share text, images, and files up to 50MB across devices in real time. Instant sync, no login required.">
-<meta name="keywords" content="clipboard, real-time sync, online clipboard, file sharing, rapidclip">
+<title>RapidClip — Real-Time Cross-Device Clipboard & File Sharing</title>
+<meta name="description" content="RapidClip (LiveClip) - Share text, multi-snippet history, images, and files up to 50MB across devices in real time. Instant sync, no login required.">
+<meta name="keywords" content="clipboard, real-time sync, online clipboard, file sharing, rapidclip, cross device copy paste">
+<meta name="theme-color" content="#818cf8">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+
+<!-- Open Graph / Facebook / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="RapidClip — Real-Time Cross-Device Clipboard">
+<meta property="og:description" content="Share text, clips, photos, and files up to 50MB across your phone, tablet, and PC in real time. No sign-up required.">
+<meta property="twitter:card" content="summary">
+<meta property="twitter:title" content="RapidClip — Real-Time Cross-Device Clipboard">
+<meta property="twitter:description" content="Share text, clips, photos, and files up to 50MB across devices instantly.">
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RapidClip",
+  "alternateName": "LiveClip",
+  "description": "Instant, no-login cross-device real-time clipboard and file sharing web application.",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "All modern browsers (Windows, macOS, iOS, Android, Linux)",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -16,14 +45,14 @@
 
 <style>
 :root{--bg:#050507;--s1:rgba(24,24,27,.7);--s2:rgba(39,39,42,.5);--s3:#3f3f46;--border:rgba(63,63,70,.6);--t1:#fafafa;--t2:#a1a1aa;--t3:#71717a;--accent:#818cf8;--accent2:#6366f1;--accent3:#4f46e5;--glow:rgba(129,140,248,.08);--green:#34d399;--red:#f87171;--blue:#60a5fa;--radius:16px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--mono:'SF Mono','Fira Code',monospace;--shadow:0 8px 32px rgba(0,0,0,.5);--spring:cubic-bezier(.175,.885,.32,1.275);--ease:cubic-bezier(.4,0,.2,1);--glass:saturate(180%) blur(20px)}
-[data-theme="light"]{--bg:#faf9f7;--s1:rgba(255,255,255,.9);--s2:rgba(245,243,240,.8);--s3:#ede9e3;--border:rgba(214,207,196,.6);--t1:#1c1917;--t2:#44403c;--t3:#78716c;--accent:#6366f1;--accent2:#4f46e5;--accent3:#4338ca;--glow:rgba(99,102,241,.06);--shadow:0 8px 32px rgba(0,0,0,.04);--glass:saturate(120%) blur(20px)}}
+[data-theme="light"]{--bg:#faf9f7;--s1:rgba(255,255,255,.9);--s2:rgba(245,243,240,.8);--s3:#ede9e3;--border:rgba(214,207,196,.6);--t1:#1c1917;--t2:#44403c;--t3:#78716c;--accent:#6366f1;--accent2:#4f46e5;--accent3:#4338ca;--glow:rgba(99,102,241,.06);--shadow:0 8px 32px rgba(0,0,0,.04);--glass:saturate(120%) blur(20px)}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t1);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,textarea{font-family:inherit;outline:none;border:none;background:none}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px}
 
-/* Animations - Jitter-inspired fluid motion */
+/* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes fadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 @keyframes slideR{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
@@ -32,8 +61,6 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes glow-pulse{0%,100%{box-shadow:0 0 0 0 var(--glow)}50%{box-shadow:0 0 20px 4px var(--glow)}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 /* Layout */
 .app{min-height:100vh;display:flex;flex-direction:column;position:relative}
@@ -44,12 +71,12 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 
 /* ─── HOME ─── */
 #home{align-items:center;justify-content:center;padding:2rem 1.5rem}
-.home-box{width:100%;max-width:420px;animation:fadeUp .6s var(--spring)}
+.home-box{width:100%;max-width:440px;animation:fadeUp .6s var(--spring)}
 .logo{display:flex;align-items:center;gap:.7rem;margin-bottom:.4rem}
 .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent3));border-radius:10px;display:flex;align-items:center;justify-content:center;animation:float 3s ease-in-out infinite;box-shadow:0 4px 16px rgba(99,102,241,.3)}
 .logo-icon svg{width:20px;height:20px;color:#fff}
 .logo h1{font-size:1.6rem;font-weight:800;letter-spacing:-.04em;background:linear-gradient(135deg,#a5b4fc,var(--accent),var(--accent3));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
-.subtitle{font-size:.87rem;color:var(--t2);margin-bottom:2.5rem;line-height:1.6}
+.subtitle{font-size:.87rem;color:var(--t2);margin-bottom:2.2rem;line-height:1.6}
 
 .card{background:var(--s1);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:1.35rem;margin-bottom:1.1rem;transition:all .3s var(--ease);position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.03),transparent);transition:left .6s}
@@ -83,8 +110,18 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 .btn-icon:hover{background:var(--glow);color:var(--accent)}
 .btn-icon svg{width:16px;height:16px}
 
-.info-box{margin-top:1.5rem;padding:.8rem 1rem;background:var(--s1);border:1px solid var(--border);border-radius:10px;font-size:.72rem;color:var(--t3);line-height:1.7}
+.info-box{margin-top:1.5rem;padding:.85rem 1rem;background:var(--s1);border:1px solid var(--border);border-radius:10px;font-size:.72rem;color:var(--t3);line-height:1.7}
 .info-box b{color:var(--t2);font-weight:600}
+
+/* Recent rooms, FAQ */
+.recent{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--accent);background:var(--glow);border:1px solid var(--border);padding:.28rem .65rem;border-radius:999px;transition:all .25s var(--spring)}
+.chip:hover{border-color:var(--accent);transform:translateY(-2px)}
+.faq{margin-top:1.25rem}
+.faq h2{font-size:.8rem;font-weight:700;color:var(--t2);margin-bottom:.5rem}
+.faq details{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;margin-bottom:.4rem;font-size:.74rem;color:var(--t3);line-height:1.65}
+.faq summary{cursor:pointer;font-weight:600;color:var(--t2)}
+.faq p{margin-top:.4rem}
 
 /* ─── ROOM ─── */
 #room{flex-direction:column;width:100%;max-width:920px;margin:0 auto;padding:1.25rem 1.5rem}
@@ -115,10 +152,22 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 /* ─── TEXT PANEL ─── */
 .text-bar{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap;margin-bottom:.6rem;animation:slideR .3s ease}
 .text-bar .sep{width:1px;height:20px;background:var(--border);margin:0 .2rem}
-.editor{width:100%;min-height:340px;padding:1rem 1.2rem;background:var(--s1);backdrop-filter:var(--glass);border:1px solid var(--border);border-radius:var(--radius);font-size:.875rem;color:var(--t1);resize:vertical;line-height:1.7;transition:all .3s var(--ease);font-family:var(--mono);box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
+.editor{width:100%;min-height:280px;padding:1rem 1.2rem;background:var(--s1);backdrop-filter:var(--glass);border:1px solid var(--border);border-radius:var(--radius);font-size:.875rem;color:var(--t1);resize:vertical;line-height:1.7;transition:all .3s var(--ease);font-family:var(--mono);box-shadow:inset 0 2px 4px rgba(0,0,0,.05)}
 .editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow),0 8px 32px rgba(99,102,241,.06),inset 0 2px 4px rgba(0,0,0,.05);transform:scale(1.002)}
 .editor::placeholder{color:var(--t3)}
 .text-meta{display:flex;gap:1.25rem;padding:.55rem .25rem;font-size:.72rem;color:var(--t3);margin-top:.4rem}
+
+/* ─── CLIPS HISTORY FEED ─── */
+.clips-section{margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem}
+.clips-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem}
+.clips-title{font-size:.78rem;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:.35rem}
+.clips-list{display:flex;flex-direction:column;gap:.5rem;max-height:260px;overflow-y:auto;padding-right:2px}
+.clip-item{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:.65rem .85rem;display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;transition:all .25s var(--spring)}
+.clip-item:hover{border-color:var(--accent);background:var(--s2);transform:translateX(3px)}
+.clip-body{flex:1;min-width:0}
+.clip-text{font-family:var(--mono);font-size:.78rem;color:var(--t1);white-space:pre-wrap;word-break:break-word;max-height:60px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;line-height:1.4}
+.clip-meta{font-size:.65rem;color:var(--t3);margin-top:.3rem}
+.clip-actions{display:flex;gap:.25rem;flex-shrink:0}
 
 /* ─── IMAGE PANEL ─── */
 .dropzone{width:100%;border:2px dashed var(--border);border-radius:var(--radius);padding:3rem 1rem;text-align:center;cursor:pointer;transition:all .3s var(--spring);color:var(--t3);background:var(--s1);backdrop-filter:var(--glass);position:relative;overflow:hidden}
@@ -157,16 +206,7 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 .thm{position:fixed;bottom:1.5rem;left:1.5rem;z-index:9999;width:40px;height:40px;border-radius:50%;background:var(--s1);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 4px 16px rgba(0,0,0,.15);transition:all .3s var(--spring)}
 .thm:hover{border-color:var(--accent);transform:scale(1.15) rotate(15deg);box-shadow:0 6px 24px var(--glow)}
 
-
-/* Recent rooms, FAQ, modal, lightbox */
-.recent{display:flex;flex-wrap:wrap;gap:.4rem}
-.chip{font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--accent);background:var(--glow);border:1px solid var(--border);padding:.28rem .65rem;border-radius:999px;transition:all .25s var(--spring)}
-.chip:hover{border-color:var(--accent);transform:translateY(-2px)}
-.faq{margin-top:1.25rem}
-.faq h2{font-size:.8rem;font-weight:700;color:var(--t2);margin-bottom:.5rem}
-.faq details{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;margin-bottom:.4rem;font-size:.74rem;color:var(--t3);line-height:1.65}
-.faq summary{cursor:pointer;font-weight:600;color:var(--t2)}
-.faq p{margin-top:.4rem}
+/* Modals */
 .modal{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1rem}
 .modal.on{display:flex}
 .modal-box{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;text-align:center;max-width:320px;width:100%;animation:pop .35s var(--spring)}
@@ -183,8 +223,20 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 .ad-slot{width:100%;min-height:90px;background:var(--s1);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border:1px dashed var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;overflow:hidden;transition:all .3s var(--ease);text-align:center}
 .ad-slot:hover{border-color:var(--accent)}
 .ad-slot iframe{max-width:100%!important;border:none!important}
-.ad-fallback{color:var(--t3);font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.8rem}
-.ad-fallback svg{width:20px;height:20px;opacity:.5}
+
+/* Footer & Legal Links */
+.home-footer{margin-top:2rem;text-align:center;padding-top:1.25rem;border-top:1px solid var(--border)}
+.footer-links{display:flex;align-items:center;justify-content:center;gap:.6rem;font-size:.74rem;margin-bottom:.4rem;flex-wrap:wrap}
+.footer-links a{color:var(--t2);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--accent);text-decoration:underline}
+.footer-links .dot{color:var(--t3)}
+.copyright{font-size:.7rem;color:var(--t3)}
+.copyright b{color:var(--t2)}
+
+/* Cookie Consent */
+.cookie-banner{position:fixed;bottom:1.5rem;right:1.5rem;max-width:380px;background:var(--s1);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);border:1px solid var(--border);border-radius:12px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;box-shadow:var(--shadow);z-index:9999;font-size:.74rem;color:var(--t2);animation:toast-in .4s var(--spring)}
+.cookie-text a{color:var(--accent);text-decoration:none}
+.cookie-text a:hover{text-decoration:underline}
 
 @media(max-width:640px){
   #room{padding:1rem}
@@ -195,6 +247,7 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
   .text-bar{gap:.2rem}.text-bar .btn{font-size:.68rem;padding:.3rem .45rem}
   .gallery{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .file-row{flex-wrap:wrap}.file-row .f-actions{width:100%;justify-content:flex-end;margin-top:.3rem}
+  .cookie-banner{left:1rem;right:1rem;bottom:1rem;max-width:none}
 }
 </style>
 </head>
@@ -206,14 +259,14 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 <div class="home-box">
   <div class="logo">
     <div class="logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>
-    <h1>LiveClip</h1>
+    <h1>RapidClip</h1>
   </div>
-  <p class="subtitle">Share text, images & files across devices instantly. Real-time sync, no sign-up.</p>
+  <p class="subtitle">Share text, multi-snippet history & files across devices instantly. Real-time sync, no sign-up.</p>
 
   <div class="card">
     <div class="card-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>Create room</div>
     <div class="input-row">
-      <input type="text" class="input" id="i-create" placeholder="Room name " maxlength="20" autocomplete="off">
+      <input type="text" class="input" id="i-create" placeholder="Room name" maxlength="20" autocomplete="off">
       <button class="btn btn-accent" id="b-create">Create</button>
     </div>
     <div class="or">or</div>
@@ -234,16 +287,16 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
   </div>
 
   <div class="info-box">
-    <b>⚡ How it works:</b> Create or join a room → share text, images & files (up to 50 MB) in real-time.<br>
-    <b>⏱ Auto-cleanup:</b> Files & images auto-delete after 48 hours.
+    <b>⚡ How it works:</b> Create or join a room → share live text, history clips, images & files (up to 50 MB) in real-time.<br>
+    <b>⏱ Auto-cleanup:</b> Files & images auto-delete after approximately 48 hours.
   </div>
 
   <section class="faq">
     <h2>Frequently asked questions</h2>
-    <details><summary>What is LiveClip?</summary><p>LiveClip is a free online clipboard. Open a room on one device, open the same room on another, and text, images and files appear on both in real time. No account is needed.</p></details>
-    <details><summary>How do I move text from my phone to my PC?</summary><p>Create a room on one device, then tap the share button inside the room to show a QR code. Scan it with the other device to join the same room.</p></details>
-    <details><summary>Is my data private?</summary><p>Anyone who knows or guesses a room name can read it. Use a long, random room name for anything sensitive and don't share secrets such as passwords.</p></details>
-    <details><summary>How long are files kept?</summary><p>Files and images are removed after about 48 hours. Files can be up to 50 MB each.</p></details>
+    <details><summary>What is RapidClip (LiveClip)?</summary><p>RapidClip is a free, instant cross-device clipboard. Open a room on one device, scan the QR code on another, and text snippets, images, and files appear on both in real time without login.</p></details>
+    <details><summary>How do I move text from my phone to my PC?</summary><p>Create a room on your PC, then tap the Share button inside the room to display a QR code. Scan it with your phone to sync instantly.</p></details>
+    <details><summary>Is my data private?</summary><p>Anyone who possesses the room code can read its contents. For sensitive clips, use our random room generator and clear your room when done.</p></details>
+    <details><summary>How long are files kept?</summary><p>Files, history clips, and images are temporary and removed after about 48 hours. Files can be up to 50 MB each.</p></details>
   </section>
 
   <!-- Home Screen Ad Banner -->
@@ -263,7 +316,16 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
     </div>
   </div>
 
-  <p style="margin-top:1.5rem;font-size:.7rem;color:var(--t3);text-align:center">Created by <b style="color:var(--t2)">Prateek</b></p>
+  <footer class="home-footer">
+    <div class="footer-links">
+      <a href="about.html">About & Guides</a>
+      <span class="dot">•</span>
+      <a href="privacy.html">Privacy Policy</a>
+      <span class="dot">•</span>
+      <a href="terms.html">Terms of Service</a>
+    </div>
+    <p class="copyright">Created by <b>Prateek</b> • Free Real-Time Cross-Device Clipboard</p>
+  </footer>
 </div>
 </div>
 
@@ -290,8 +352,9 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
   <!-- TEXT PANEL -->
   <div id="p-text" class="panel on">
     <div class="text-bar">
+      <button class="btn btn-accent btn-xs" id="t-save-clip">+ Save Clip</button>
       <button class="btn btn-ghost btn-xs" id="t-copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button>
-      <button class="btn btn-ghost btn-xs" id="t-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Save</button>
+      <button class="btn btn-ghost btn-xs" id="t-save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Save .txt</button>
       <button class="btn btn-ghost btn-xs" id="t-paste">Paste</button>
       <button class="btn btn-ghost btn-xs" id="t-clear">Clear</button>
       <span class="sep"></span>
@@ -304,16 +367,28 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
       <span class="sep"></span>
       <button class="btn btn-ghost btn-xs" id="t-dedup" title="Find & remove duplicate lines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg> Dedup</button>
       <button class="btn btn-ghost btn-xs" id="t-finddup" title="Highlight duplicates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Find Dups</button>
+      <span class="sep"></span>
+      <button class="btn btn-ghost btn-xs" id="t-json" title="Prettify JSON">JSON</button>
+      <button class="btn btn-ghost btn-xs" id="t-b64" title="Base64 encode/decode">B64</button>
     </div>
     <textarea id="editor" class="editor" placeholder="Start typing — syncs instantly across devices..."></textarea>
     <div class="text-meta"><span id="m-c">0 chars</span><span id="m-w">0 words</span><span id="m-l">1 line</span><span id="m-d" style="color:var(--accent)"></span></div>
+
+    <!-- Clips History Feed -->
+    <div class="clips-section">
+      <div class="clips-header">
+        <span class="clips-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></svg> Saved Clips (<span id="clips-count">0</span>)</span>
+        <button class="btn btn-ghost btn-xs" id="clips-clear" style="font-size:.65rem">Clear History</button>
+      </div>
+      <div class="clips-list" id="clips-list"></div>
+    </div>
   </div>
 
   <!-- IMAGE PANEL -->
   <div id="p-images" class="panel">
     <div class="dropzone" id="d-img">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-      <p>Drop images here or click to upload</p>
+      <p>Drop images here or click to upload (auto-optimized)</p>
     </div>
     <div class="gallery" id="igrid"></div>
   </div>
@@ -346,8 +421,11 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
 </div>
 
 </div>
+
 <input type="file" id="fi-img" accept="image/*" multiple hidden>
 <input type="file" id="fi-file" multiple hidden>
+
+<!-- Modals -->
 <div class="modal" id="qr-modal"><div class="modal-box">
   <h3>Join this room</h3>
   <div class="qr" id="qr-img"></div>
@@ -355,16 +433,25 @@ input,textarea{font-family:inherit;outline:none;border:none;background:none}
   <div class="row"><button class="btn btn-accent btn-sm" id="qr-copy">Copy link</button><button class="btn btn-ghost btn-sm" id="qr-close">Close</button></div>
 </div></div>
 <div class="modal lightbox" id="lightbox"><img id="lb-img" alt="Preview"></div>
+
+<!-- Cookie Consent Banner -->
+<div class="cookie-banner" id="cookie-banner" style="display:none">
+  <div class="cookie-text">
+    We use cookies and local storage to personalize content and support our site with Google AdSense. 
+    <a href="privacy.html" target="_blank">Learn more in Privacy Policy</a>.
+  </div>
+  <button class="btn btn-accent btn-xs" id="cookie-ok">Got it</button>
+</div>
+
 <div class="toasts" id="toasts"></div>
 <button class="thm" id="thm" title="Toggle theme">🌙</button>
-</body>
-</html>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyCpI0_ErZHzPS4hNMwV3PR9cMR5wXhf62c",authDomain:"rapidclip-a8994.firebaseapp.com",databaseURL:"https://rapidclip-a8994-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"rapidclip-a8994",storageBucket:"rapidclip-a8994.firebasestorage.app",messagingSenderId:"797161754225",appId:"1:797161754225:web:e2a18ee7c4df08d5d595d0"};
 firebase.initializeApp(firebaseConfig);const db=firebase.database();
 function roomRef(id){return db.ref('rooms/'+id)}
 
+const clientId = 'c_' + Math.random().toString(36).substring(2, 9);
 function toast(m,t='i'){const e=document.createElement('div');e.className='toast '+t;e.textContent=m;document.getElementById('toasts').appendChild(e);setTimeout(()=>e.remove(),3500)}
 function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''}
 function f2b64(f){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=()=>r(rd.result.split(',')[1]);rd.onerror=j;rd.readAsDataURL(f)})}
@@ -374,21 +461,122 @@ function fmtSz(b){if(!b)return'0 B';const u=['B','KB','MB','GB'],i=Math.min(Math
 function fIco(m){if(!m)return'📎';if(m.includes('pdf'))return'📄';if(m.includes('zip'))return'📦';if(m.startsWith('text/'))return'📝';if(m.startsWith('image/'))return'🖼️';if(m.startsWith('video/'))return'🎬';if(m.startsWith('audio/'))return'🎵';return'📎'}
 function genId(){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let k='';for(let i=0;i<6;i++)k+=c[Math.floor(Math.random()*36)];return k}
 
+/* Client-side image compression: reduces 10MB phone camera shots to ~350KB before upload */
+function compressImg(file, maxDimension=1920, quality=0.82){
+  return new Promise((resolve)=>{
+    if(!file.type.startsWith('image/')||file.type==='image/gif'||file.type==='image/svg+xml'){
+      return resolve(file);
+    }
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let {width,height}=img;
+      if(width>maxDimension||height>maxDimension){
+        if(width>height){
+          height=Math.round((height*maxDimension)/width);
+          width=maxDimension;
+        }else{
+          width=Math.round((width*maxDimension)/height);
+          height=maxDimension;
+        }
+      }
+      const canvas=document.createElement('canvas');
+      canvas.width=width;canvas.height=height;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,width,height);
+      canvas.toBlob((blob)=>{
+        if(blob&&blob.size<file.size){
+          resolve(new File([blob],file.name.replace(/\.[^.]+$/,'.jpg'),{type:'image/jpeg'}));
+        }else{
+          resolve(file);
+        }
+      },'image/jpeg',quality);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);resolve(file)};
+    img.src=url;
+  });
+}
+
 let room=null,listeners=[],isRemote=false,dTimer=null;
 function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on')}
 
 async function createRoom(name){const id=(name||genId()).toUpperCase();try{if(name){const s=await roomRef(id).child('created').get();if(s.exists()){toast('"'+id+'" exists','e');return null}}await roomRef(id).child('created').set(Date.now());return id}catch(e){toast('Failed: '+e.message,'e');return null}}
 async function joinRoom(id){id=id.toUpperCase();if(id.length<3||id.length>20||!/^[A-Z0-9_-]+$/.test(id)){toast('3-20 chars only','e');return false}try{const s=await roomRef(id).child('created').get();if(!s.exists()){toast('Room not found','e');return false}return true}catch(e){toast('Failed','e');return false}}
-function enterRoom(id){room=id;window.location.hash=id;document.getElementById('r-name').textContent=id;show('room');startText();startImg();startFile();monitorConn()}
-function leaveRoom(){listeners.forEach(f=>{try{f()}catch(e){}});listeners=[];room=null;window.location.hash='';document.getElementById('editor').value='';updateMeta();document.getElementById('igrid').innerHTML='';document.getElementById('flist').innerHTML='';show('home')}
+function enterRoom(id){room=id;window.location.hash=id;document.getElementById('r-name').textContent=id;show('room');startText();startClips();startImg();startFile();monitorConn();monitorPresence()}
+function leaveRoom(){listeners.forEach(f=>{try{f()}catch(e){}});listeners=[];room=null;window.location.hash='';document.getElementById('editor').value='';updateMeta();document.getElementById('igrid').innerHTML='';document.getElementById('flist').innerHTML='';document.getElementById('clips-list').innerHTML='';document.getElementById('clips-count').textContent='0';show('home')}
+
 function monitorConn(){const r=db.ref('.info/connected'),cb=s=>{const el=document.getElementById('r-conn');if(s.val()){el.className='conn on';el.textContent='Connected'}else{el.className='conn off';el.textContent='Offline'}};r.on('value',cb);listeners.push(()=>r.off('value',cb))}
+
+function monitorPresence(){
+  if(!room)return;
+  const myPresenceRef=roomRef(room).child('presence/'+clientId);
+  const connRef=db.ref('.info/connected');
+  const connCb=s=>{if(s.val()===true){myPresenceRef.onDisconnect().remove();myPresenceRef.set({online:true,at:Date.now()})}};
+  connRef.on('value',connCb);
+  listeners.push(()=>{connRef.off('value',connCb);myPresenceRef.remove()});
+  const presRef=roomRef(room).child('presence');
+  const presCb=s=>{
+    const v=s.val()||{};
+    const count=Object.keys(v).length;
+    const el=document.getElementById('r-conn');
+    if(el&&el.classList.contains('on')){
+      el.textContent=count>1?count+' devices online':'Connected';
+    }
+  };
+  presRef.on('value',presCb);
+  listeners.push(()=>presRef.off('value',presCb));
+}
 
 function startText(){const ref=roomRef(room).child('text'),ta=document.getElementById('editor');const cb=s=>{const t=s.val()||'';if(t!==ta.value){isRemote=true;const cs=ta.selectionStart,ce=ta.selectionEnd;ta.value=t;ta.selectionStart=Math.min(cs,t.length);ta.selectionEnd=Math.min(ce,t.length);isRemote=false;updateMeta()}};ref.on('value',cb);const inp=()=>{if(isRemote)return;updateMeta();clearTimeout(dTimer);dTimer=setTimeout(()=>ref.set(ta.value),300)};ta.addEventListener('input',inp);listeners.push(()=>{ref.off('value',cb);ta.removeEventListener('input',inp)})}
 function updateMeta(){const t=document.getElementById('editor').value;document.getElementById('m-c').textContent=t.length+' chars';document.getElementById('m-w').textContent=(t.trim()?t.trim().split(/\s+/).length:0)+' words';document.getElementById('m-l').textContent=(t?t.split('\n').length:1)+' lines'}
 
+/* ─── CLIPS HISTORY ─── */
+function startClips(){
+  const ref=roomRef(room).child('clips');
+  const list=document.getElementById('clips-list');
+  list.innerHTML='';
+  let clipCount=0;
+  const updateCount=()=>{document.getElementById('clips-count').textContent=clipCount};
+  const addCb=s=>{clipCount++;updateCount();renderClip(s.key,s.val())};
+  const remCb=s=>{const el=document.getElementById('clip-'+s.key);if(el){el.remove();clipCount=Math.max(0,clipCount-1);updateCount()}};
+  ref.on('child_added',addCb);
+  ref.on('child_removed',remCb);
+  listeners.push(()=>{ref.off('child_added',addCb);ref.off('child_removed',remCb)});
+}
+
+function renderClip(id,d){
+  const list=document.getElementById('clips-list');
+  const div=document.createElement('div');
+  div.className='clip-item';
+  div.id='clip-'+id;
+  const timeStr=d.time?new Date(d.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
+  div.innerHTML='<div class="clip-body"><div class="clip-text">'+esc(d.text||'')+'</div><div class="clip-meta">'+(timeStr?'Saved at '+timeStr:'Clip')+'</div></div><div class="clip-actions"><button class="btn btn-ghost btn-xs cp" title="Copy Clip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button><button class="btn btn-ghost btn-xs ld" title="Insert into Editor">Insert</button><button class="btn btn-red btn-xs del" title="Delete Clip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>';
+  div.querySelector('.cp').onclick=async()=>{try{await navigator.clipboard.writeText(d.text||'');toast('Clip copied!','s')}catch(e){toast('Failed','e')}};
+  div.querySelector('.ld').onclick=()=>{const ed=document.getElementById('editor');ed.value=(ed.value?(ed.value+'\n\n'):'')+d.text;ed.dispatchEvent(new Event('input'));toast('Inserted into editor','i')};
+  div.querySelector('.del').onclick=()=>roomRef(room).child('clips/'+id).remove().then(()=>toast('Clip deleted','s'));
+  list.prepend(div);
+}
+
+async function saveCurrentClip(){
+  const ed=document.getElementById('editor');
+  const t=ed.value.trim();
+  if(!t){toast('No text to save as clip','e');return}
+  try{await roomRef(room).child('clips').push({text:t,time:Date.now()});toast('Clip saved to history!','s')}catch(e){toast('Save failed','e')}
+}
+
 function startImg(){const ref=roomRef(room).child('images');document.getElementById('igrid').innerHTML='';const a=s=>renderImg(s.key,s.val()),r=s=>{const e=document.getElementById('im-'+s.key);if(e)e.remove()};ref.on('child_added',a);ref.on('child_removed',r);listeners.push(()=>{ref.off('child_added',a);ref.off('child_removed',r)})}
 function renderImg(id,d){const c=document.createElement('div');c.className='img-card';c.id='im-'+id;const i=document.createElement('img');i.src='data:'+(d.mime||'image/png')+';base64,'+d.data;const o=document.createElement('div');o.className='overlay';const dl=document.createElement('button');dl.className='btn-icon';dl.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>';dl.onclick=()=>{const b=b64blob(d.data,d.mime);const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=d.name||'image.png';a.click();setTimeout(()=>URL.revokeObjectURL(u),1e3)};const rm=document.createElement('button');rm.className='btn-icon';rm.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>';rm.onclick=()=>roomRef(room).child('images/'+id).remove().then(()=>toast('Deleted','s'));o.append(dl,rm);c.append(i,o);document.getElementById('igrid').appendChild(c)}
-async function uploadImg(f){const dz=document.getElementById('d-img');dz.classList.add('busy');try{const b=await f2b64(f);await roomRef(room).child('images').push({data:b,name:f.name,mime:f.type,addedAt:Date.now()});toast('Uploaded','s')}catch(e){toast('Failed','e')}finally{dz.classList.remove('busy')}}
+async function uploadImg(f){
+  const dz=document.getElementById('d-img');dz.classList.add('busy');
+  try{
+    f=await compressImg(f);
+    const b=await f2b64(f);
+    await roomRef(room).child('images').push({data:b,name:f.name,mime:f.type,addedAt:Date.now()});
+    toast('Uploaded: '+f.name,'s');
+  }catch(e){toast('Failed: '+e.message,'e')}
+  finally{dz.classList.remove('busy')}
+}
 
 function startFile(){const ref=roomRef(room).child('files');document.getElementById('flist').innerHTML='';const a=s=>renderFile(s.key,s.val()),r=s=>{const e=document.getElementById('fl-'+s.key);if(e)e.remove()};ref.on('child_added',a);ref.on('child_removed',r);listeners.push(()=>{ref.off('child_added',a);ref.off('child_removed',r)})}
 function renderFile(id,d){const row=document.createElement('div');row.className='file-row';row.id='fl-'+id;row.innerHTML='<div class="f-icon">'+fIco(d.mime)+'</div><div class="f-info"><div class="f-name" title="'+esc(d.name)+'">'+esc(d.name)+'</div><div class="f-size">'+fmtSz(d.size)+'</div></div><div class="f-actions"><button class="btn btn-ghost btn-xs dl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></button><button class="btn btn-red btn-xs rm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>';row.querySelector('.dl').onclick=()=>dlFile(id);row.querySelector('.rm').onclick=()=>rmFile(id,row);document.getElementById('flist').appendChild(row)}
@@ -397,8 +585,20 @@ async function dlFile(id){try{const snap=await roomRef(room).child('files/'+id).
 async function rmFile(id,el){try{const s=await roomRef(room).child('files/'+id).get();const m=s.val();await roomRef(room).child('files/'+id).remove();if(m&&m.chunks)await roomRef(room).child('fileChunks/'+id).remove();if(el)el.remove();toast('Deleted','s')}catch(e){toast('Failed','e')}}
 
 document.addEventListener('DOMContentLoaded',()=>{
+  // Theme initialization
   const th=localStorage.getItem('lc_th')||'dark';document.documentElement.setAttribute('data-theme',th);document.getElementById('thm').textContent=th==='dark'?'☀️':'🌙';
   document.getElementById('thm').onclick=()=>{const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('lc_th',n);document.getElementById('thm').textContent=n==='dark'?'☀️':'🌙'};
+  
+  // Cookie Consent check
+  if(!localStorage.getItem('lc_consent')){
+    document.getElementById('cookie-banner').style.display='flex';
+    document.getElementById('cookie-ok').onclick=()=>{
+      localStorage.setItem('lc_consent','1');
+      document.getElementById('cookie-banner').style.display='none';
+    };
+  }
+
+  // Room Creation & Joining
   document.getElementById('b-create').onclick=async()=>{const v=document.getElementById('i-create').value.trim();if(!v||v.length<3){toast('Min 3 chars','e');return}if(!/^[A-Za-z0-9_-]+$/.test(v)){toast('Letters/numbers only','e');return}const id=await createRoom(v);if(id){document.getElementById('i-create').value='';enterRoom(id)}};
   document.getElementById('i-create').onkeydown=e=>{if(e.key==='Enter')document.getElementById('b-create').click()};
   document.getElementById('b-random').onclick=async()=>{const id=await createRoom();if(id)enterRoom(id)};
@@ -407,10 +607,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('b-leave').onclick=leaveRoom;
   document.getElementById('b-copy').onclick=async()=>{try{await navigator.clipboard.writeText(room);toast('Copied!','s')}catch(e){toast('Failed','e')}};
   document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('p-'+b.dataset.p).classList.add('on')});
+
+  // Editor actions
   const ed=document.getElementById('editor'),push=()=>{if(room)roomRef(room).child('text').set(ed.value);updateMeta()};
   ed.oninput=()=>{if(isRemote)return;updateMeta();clearTimeout(dTimer);dTimer=setTimeout(()=>roomRef(room).child('text').set(ed.value),300)};
+  document.getElementById('t-save-clip').onclick=saveCurrentClip;
+  document.getElementById('clips-clear').onclick=()=>{if(!confirm('Clear all clips in this room?'))return;roomRef(room).child('clips').remove().then(()=>toast('History cleared','s'))};
   document.getElementById('t-copy').onclick=async()=>{try{await navigator.clipboard.writeText(ed.value);toast('Copied','s')}catch(e){toast('Failed','e')}};
-  document.getElementById('t-save').onclick=()=>{const b=new Blob([ed.value],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='liveclip.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1e3)};
+  document.getElementById('t-save').onclick=()=>{const b=new Blob([ed.value],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='rapidclip.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),1e3)};
   document.getElementById('t-up').onclick=()=>{ed.value=ed.value.toUpperCase();push()};
   document.getElementById('t-lo').onclick=()=>{ed.value=ed.value.toLowerCase();push()};
   document.getElementById('t-trim').onclick=()=>{ed.value=ed.value.trim();push()};
@@ -419,16 +623,24 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('t-sortlen').onclick=()=>{ed.value=ed.value.split('\n').sort((a,b)=>a.length-b.length).join('\n');push()};
   document.getElementById('t-dedup').onclick=()=>{const lines=ed.value.split('\n');const unique=[...new Set(lines)];const removed=lines.length-unique.length;ed.value=unique.join('\n');push();toast(removed+' duplicates removed','s')};
   document.getElementById('t-finddup').onclick=()=>{const lines=ed.value.split('\n');const counts={};lines.forEach(l=>{counts[l]=(counts[l]||0)+1});const dups=Object.entries(counts).filter(([k,v])=>v>1).map(([k,v])=>'"'+k+'" (×'+v+')');if(dups.length===0){toast('No duplicates found','i');document.getElementById('m-d').textContent=''}else{document.getElementById('m-d').textContent=dups.length+' duplicate lines found';toast(dups.length+' duplicates found','i')}};
+  
+  // Developer Utilities: JSON format and Base64 convert
+  document.getElementById('t-json').onclick=()=>{const val=ed.value.trim();if(!val)return;try{const parsed=JSON.parse(val);ed.value=JSON.stringify(parsed,null,2);push();toast('JSON formatted','s')}catch(e){toast('Invalid JSON','e')}};
+  document.getElementById('t-b64').onclick=()=>{const val=ed.value.trim();if(!val)return;try{const dec=atob(val);ed.value=dec;push();toast('Base64 decoded','s')}catch(e){try{const enc=btoa(unescape(encodeURIComponent(val)));ed.value=enc;push();toast('Base64 encoded','s')}catch(err){toast('Conversion failed','e')}}};
+
+  // Upload zones
   const iDz=document.getElementById('d-img'),iIn=document.getElementById('fi-img');
   iDz.onclick=()=>iIn.click();iDz.ondragover=e=>{e.preventDefault();iDz.classList.add('over')};iDz.ondragleave=()=>iDz.classList.remove('over');iDz.ondrop=e=>{e.preventDefault();iDz.classList.remove('over');[...e.dataTransfer.files].filter(f=>f.type.startsWith('image/')).forEach(uploadImg)};iIn.onchange=e=>{[...e.target.files].forEach(uploadImg);iIn.value=''};
   const fDz=document.getElementById('d-file'),fIn=document.getElementById('fi-file');
   fDz.onclick=()=>fIn.click();fDz.ondragover=e=>{e.preventDefault();fDz.classList.add('over')};fDz.ondragleave=()=>fDz.classList.remove('over');fDz.ondrop=e=>{e.preventDefault();fDz.classList.remove('over');[...e.dataTransfer.files].forEach(uploadFile)};fIn.onchange=e=>{[...e.target.files].forEach(uploadFile);fIn.value=''};
+
+  // Hash route
   const h=window.location.hash.slice(1).trim().toUpperCase();
   if(h&&h.length>=3&&/^[A-Z0-9_-]+$/.test(h)){
     joinRoom(h).then(async ok=>{
       if(ok){enterRoom(h)}
       else{try{await roomRef(h).child('created').set(Date.now());enterRoom(h)}catch(e){toast('Could not join room','e')}}
-    })
+    });
   }
 });
 
@@ -481,6 +693,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'){modal.classList.remove('on');lb.classList.remove('on')}
   });
+
+  // Service Worker registration for PWA
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
 })();
 </script>
 </body>
